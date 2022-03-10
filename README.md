@@ -1,7 +1,6 @@
 # Social-Media-Web-App
 
 I am developing a Social Media Website which have all the features which a typical Social Media Website like Facebook and LinkedIn consists of.
-Today, there are scores of social media site. They provide different services, have different fan followings and enjoy very distinct identity. Yet, all of them share some common characteristics. So, how do you identify them?
 
 Here are some key features of my social media app : 
 
