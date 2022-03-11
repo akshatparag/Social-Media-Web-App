@@ -2,11 +2,21 @@ const User = require('../models/user')
 
 //renders user profile page
 module.exports.profile = function(req,res){
-    return res.render('user_profile.ejs',{
-        title:"Profile"
-    });
-};
+    if(req.cookies.user_id){
+        User.findById(req.cookies.user_id,function(err,user){
+            if(user){
+                return res.render('user_profile',{
+                title:"User Profile",
+                user:user
+            })
+        }
 
+        });
+    
+    }else{
+    return res.redirect('/users/sign-in');
+    }
+}
 //renders sign up page
 module.exports.signUp = function(req,res){
     return res.render('user_sign_up',{
@@ -31,7 +41,7 @@ module.exports.create = function(req,res){
         if(err){console.log('Error in finding user');return;}
 
         if(!user){
-            User.create(req.body,function(err,user){
+            User.create(req.body,function(err,user){ //This is the function of mongoose database
                 if(err){console.log('error in finding user in signing up');return;}
                 console.log("Created");
                 return res.redirect('/users/sign-in');
@@ -52,7 +62,7 @@ module.exports.createSession = function(req,res){
                 return res.redirect('back');
             }
 
-            res.cookie('user_id',user_id);
+            res.cookie('user_id',user.id);
             return res.redirect('/users/profile');
         }
         else{
