@@ -3,5 +3,13 @@
     Codeial / Profile Page
 </h1>
 
-<p><%= user.name %></p>
-<p><%= user.email %></p>
+<p><%= profile_user.name %></p>
+<p><%= profile_user.email %></p>
+
+<% if(user.id == profile_user.id){%>
+    <!--If user matches then show form-->
+        
+    <&}else{%>
+        <p><%= profile_user.name %></p>
+        <p><%= profile_user.email %></p>
+    <% } %>
