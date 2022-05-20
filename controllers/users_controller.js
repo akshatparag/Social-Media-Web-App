@@ -3,6 +3,8 @@ const res = require("express/lib/response");
 const User = require("../models/user");
 const fs = require("fs");
 const path = require('path');
+const otpMailer = require("../mailers/otp_mailer");
+const { redirect } = require("express/lib/response");
 
 // let's keep it same as before
 module.exports.profile = function (req, res) {
@@ -117,4 +119,72 @@ module.exports.destroySession = function (req, res) {
   req.logout();
   req.flash("success", "Logged out Successfully");
   return res.redirect("/");
+};
+
+module.exports.forgotPassword = function(req,res){
+  return res.render("forgot_password",{
+    title:"Forgot Password | Codeial"
+  });
+};
+
+let otp;
+console.log("Hello");
+
+module.exports.resetPassword = function(req,res){
+  User.findOne({ email: req.body.email }, function (err, user) {
+    if (err) {
+      console.log("error in finding user in signing up");
+      return;
+    }
+
+    if (!user) {
+        return res.redirect("/users/sign-in");
+    }
+     else {
+        otp = Math.floor(Math.random() * 100);
+        otpMailer.newOTP(otp,req.body.email);
+        return res.render("verification.ejs",{
+        title:"Verification | Codeial"
+      });
+    }
+  });
+};
+
+module.exports.verify = function(req,res){
+    if(req.body.otp == otp)
+    {
+      // console.log(req.body.otp);
+      // console.log(otp);
+        return res.render("change_password.ejs",{
+          title:"Change Password | Codeial"
+        });
+    }
+
+      return res.render("verification.ejs",{
+        title:"Verification | Codeial"
+    });
+};
+
+module.exports.changePassword = function(req,res){
+      if(req.body.password!=req.body.repassword)
+      {
+        alert('Password dont match');
+        return;
+      }
+      else
+      {
+        User.findOneAndUpdate({ "email": req.body.email },{
+          $set: {
+              "password": req.body.password
+          }
+       }, { new: true }, (err, doc) => {
+          if (!err) { 
+
+              res.redirect('/users/sign-in'); 
+          }
+          else {
+              console.log('Error during record update : ' + err);
+          }
+       });
+      }
 };
